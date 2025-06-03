@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 4012138514996108836}
   - component: {fileID: 5868665176653890498}
   - component: {fileID: 2344491140567602382}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,6 +126,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5391112164109344003}
+  - component: {fileID: 3429736312688675426}
   m_Layer: 6
   m_Name: Head
   m_TagString: Untagged
@@ -145,9 +146,26 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6617734996851925370}
   m_Father: {fileID: 3332578286197532228}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3429736312688675426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209124145816701640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2419079ecc9297f4f83400307ff162bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactRange: 3
+  _pullStrength: 5
+  _pData: {fileID: 4843577974874165093}
+  _pullPoint: {fileID: 6617734996851925370}
 --- !u!1 &1798715672631965947
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,7 +212,8 @@ GameObject:
   - component: {fileID: 3148452251680123048}
   - component: {fileID: 796822088163413360}
   - component: {fileID: 8661671121097837206}
-  m_Layer: 0
+  - component: {fileID: 7766896264930505112}
+  m_Layer: 6
   m_Name: MP_Thief
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248,7 +267,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
+  m_DefaultActionMap: Thief
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &4843577974874165093
@@ -266,8 +285,9 @@ MonoBehaviour:
   Player_Input: {fileID: 5766366619513752889}
   Character_Controller: {fileID: 8661671121097837206}
   _cameraTarget: {fileID: 5391112164109344003}
-  _photonView: {fileID: 1956883856438776836}
+  Photon_View: {fileID: 1956883856438776836}
   Game_Manager: {fileID: 0}
+  Player_Camera: {fileID: 0}
 --- !u!114 &1956883856438776836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,7 +327,7 @@ MonoBehaviour:
     SynchronizeEnabled: 1
     TeleportEnabled: 1
     TeleportIfDistanceGreaterThan: 3
-    InterpolateOption: 4
+    InterpolateOption: 2
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 1
     ExtrapolateOption: 0
@@ -392,6 +412,21 @@ CharacterController:
   m_SkinWidth: 0.01
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &7766896264930505112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5997861109954039805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ecaebef84d966541b4d89f5c371662d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pData: {fileID: 4843577974874165093}
+  maxHP: 100
+  currentHP: 0
 --- !u!1 &6931172198828130056
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,7 +436,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1223522571949214176}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -433,7 +468,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3695387425847584895}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Feet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -454,4 +489,35 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3332578286197532228}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8381151813514580188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6617734996851925370}
+  m_Layer: 6
+  m_Name: PullPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6617734996851925370
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8381151813514580188}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5391112164109344003}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

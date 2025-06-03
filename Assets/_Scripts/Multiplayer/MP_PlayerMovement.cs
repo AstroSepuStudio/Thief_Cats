@@ -52,7 +52,7 @@ public class MP_PlayerMovement : MonoBehaviour
     {
         if (!_photonView.IsMine)
         {
-            //enabled = false;
+            enabled = false;
             return;
         }
 
@@ -149,7 +149,7 @@ public class MP_PlayerMovement : MonoBehaviour
     private void TryJump(InputAction.CallbackContext context)
     {
         if (_isGrounded)
-            _yVelocity = _jumpForce / 100;
+            _yVelocity = _jumpForce;
     }
 
     bool CheckMovInput()
@@ -161,7 +161,6 @@ public class MP_PlayerMovement : MonoBehaviour
         return true;
     }
     #endregion
-
 
     void Update()
     {
@@ -177,22 +176,23 @@ public class MP_PlayerMovement : MonoBehaviour
         HandleStates();
 
         _movVector = _inputDir.x * transform.right + _inputDir.y * transform.forward;
-        _movVector *= _currentSpeed * Time.deltaTime;
+        _movVector *= _currentSpeed;
 
-        _pData.Character_Controller.Move(_yVelocity * Vector3.up);
-        _pData.Character_Controller.Move(_movVector);
+        Vector3 velocity = _movVector + Vector3.up * _yVelocity;
+        _pData.Character_Controller.Move(velocity * Time.deltaTime);
     }
 
     void HandleGravity()
     {
-        if (_yVelocity < 0)
+        if (_isGrounded && _yVelocity < 0)
         {
-            _yVelocity += _fallGravity * Time.deltaTime * Time.deltaTime;
-            if (_isGrounded)
-                _yVelocity = _groundYforce * Time.deltaTime * Time.deltaTime;
+            _yVelocity = _groundYforce;
         }
         else
-            _yVelocity += _gravityForce * Time.deltaTime * Time.deltaTime;
+        {
+            float gravityThisFrame = (_yVelocity < 0 ? _fallGravity : _gravityForce);
+            _yVelocity += gravityThisFrame * Time.deltaTime;
+        }
     }
 
     #region State

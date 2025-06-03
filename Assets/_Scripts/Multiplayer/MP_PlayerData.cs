@@ -1,30 +1,31 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
-using System.Collections;
 
 public class MP_PlayerData : MonoBehaviour
 {
     public PlayerInput Player_Input;
     public CharacterController Character_Controller;
     public Transform _cameraTarget;
-    public PhotonView _photonView;
-    public GameManager Game_Manager;
+    public PhotonView Photon_View;
+    [HideInInspector] public GameManager Game_Manager;
+    [HideInInspector] public Camera Player_Camera;
 
     private void Awake()
     {
-        if (!_photonView.IsMine)
+        if (!Photon_View.IsMine)
         {
-            Character_Controller.enabled = false;
+            //Character_Controller.enabled = false;
             Player_Input.enabled = false;
         }
     }
 
     public void SetUp()
     {
-        if (_photonView.IsMine)
+        if (Photon_View.IsMine)
         {
             Game_Manager.SetPlayerDataToCamera(this);
+            Player_Camera = Game_Manager.GetCamera();
         }
     }
 }

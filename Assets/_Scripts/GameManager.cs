@@ -1,11 +1,11 @@
 using Photon.Pun;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] MP_CameraMovement Camera_Movement;
+    [SerializeField] Camera M_Camera;
 
     [SerializeField] Transform _defenderSpawnPoint;
     [SerializeField] Transform[] _thiefSpawnPoints;
@@ -46,5 +46,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void SetPlayerDataToCamera(MP_PlayerData pData)
     {
         Camera_Movement._pData = pData;
+    }
+
+    public Camera GetCamera()
+    {
+        return M_Camera;
     }
 }
