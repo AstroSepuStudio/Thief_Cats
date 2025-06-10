@@ -1,14 +1,16 @@
 using Photon.Pun;
-using Photon.Pun.Demo.PunBasics;
-using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class MP_Shotgun : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] MP_PlayerData _pData;
     [SerializeField] ParticleSystem _shotEffect;
+    [SerializeField] GameObject _canvas;
+    [SerializeField] Image _reloadImage;
 
     [Header("Values")]
     [SerializeField] float _damage = 25f;
@@ -20,28 +22,43 @@ public class MP_Shotgun : MonoBehaviour
     [SerializeField] float _spreadHeight = 2f;
     [SerializeField] LayerMask _playerMask;
 
+    WaitForSeconds _shootDelay = new(0.3f);
     float _lastShotTime = -Mathf.Infinity;
+    Coroutine _currentShoot;
 
     private void Start()
     {
+        _canvas.SetActive(false);
         if (!_pData.Photon_View.IsMine || _pData == null) return;
-
+        _canvas.SetActive(true);
         _pData.Player_Input.actions["Fire"].started += Shoot;
+        _reloadImage.fillAmount = 1f;
     }
 
     void Shoot(InputAction.CallbackContext context)
     {
-        if (Time.time < _lastShotTime + _cooldown) return;
+        if (Time.time < _lastShotTime + _cooldown || _currentShoot != null) return;
+
+        _currentShoot = StartCoroutine(ShootRoutine());
+    }
+
+    IEnumerator ShootRoutine()
+    {
+        yield return _shootDelay;
 
         _lastShotTime = Time.time;
+        _currentShoot = null;
 
         _pData.Photon_View.RPC("RPC_PlayShootEffect", RpcTarget.All);
+
+        _reloadImage.fillAmount = 0f;
+        StartCoroutine(ReloadUIRoutine());
 
         Vector3 origin = _pData.Player_Camera.transform.position;
         Vector3 direction = _pData.Player_Camera.transform.forward;
 
         Vector3 boxCenter = origin + direction * (_range / 2f);
-        Vector3 boxHalfExtents = new (_spreadWidth / 2f, _spreadHeight / 2f, _range / 2f);
+        Vector3 boxHalfExtents = new(_spreadWidth / 2f, _spreadHeight / 2f, _range / 2f);
         Quaternion orientation = Quaternion.LookRotation(direction);
 
         Collider[] playersHit = Physics.OverlapBox(boxCenter, boxHalfExtents, orientation, _playerMask);
@@ -63,6 +80,18 @@ public class MP_Shotgun : MonoBehaviour
                 }
             }
         }
+    }
+
+    IEnumerator ReloadUIRoutine()
+    {
+        float elapsed = 0f;
+        while (elapsed < _cooldown)
+        {
+            elapsed += Time.deltaTime;
+            _reloadImage.fillAmount = elapsed / _cooldown;
+            yield return null;
+        }
+        _reloadImage.fillAmount = 1f;
     }
 
     [PunRPC]
