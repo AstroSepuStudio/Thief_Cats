@@ -4,12 +4,19 @@ using Photon.Pun;
 
 public class MP_PlayerData : MonoBehaviour
 {
+    public enum Team { None, Thief, Defensor}
+    public Team PlayerTeam;
     public PlayerInput Player_Input;
     public CharacterController Character_Controller;
     public Transform _cameraTarget;
     public PhotonView Photon_View;
-    [HideInInspector] public GameManager Game_Manager;
+    public GameObject PlayerModel;
+    public MP_PlayerMovement Player_Movement;
+    public MP_SpectatorMode Player_SpectatorMode;
+    public MP_PlayerInteraction Player_Interaction;
     [HideInInspector] public Camera Player_Camera;
+
+    public bool IsDead = false;
 
     private void Awake()
     {
@@ -24,8 +31,17 @@ public class MP_PlayerData : MonoBehaviour
     {
         if (Photon_View.IsMine)
         {
-            Game_Manager.SetPlayerDataToCamera(this);
-            Player_Camera = Game_Manager.GetCamera();
+            GameManager.Instance.SetPlayerDataToCamera(this);
+            Player_Camera = GameManager.Instance.GetCamera();
         }
+    }
+
+    [PunRPC]
+    public void SetTeam(Team team)
+    {
+        PlayerTeam = team;
+
+        if (team == Team.Thief)
+            GameManager.Instance.NewThief();
     }
 }

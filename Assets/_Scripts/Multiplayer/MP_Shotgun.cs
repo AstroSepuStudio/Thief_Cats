@@ -1,7 +1,9 @@
 using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.UI.Image;
 
 public class MP_Shotgun : MonoBehaviour
 {
@@ -49,7 +51,7 @@ public class MP_Shotgun : MonoBehaviour
         {
             if (playerHit.transform.root == transform.root) continue;
 
-            if (Physics.Raycast(origin, (playerHit.transform.position - origin).normalized, out RaycastHit rayHit, _range))
+            if (Physics.Raycast(origin, (playerHit.transform.position - origin + Vector3.up).normalized, out RaycastHit rayHit, _range))
             {
                 Transform playerHitRoot = playerHit.transform.root;
 

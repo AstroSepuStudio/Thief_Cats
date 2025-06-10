@@ -24,6 +24,8 @@ public class PlayerStat : MonoBehaviour
 
     void Die()
     {
-        Debug.Log($"{_pData.Photon_View.Owner.NickName} died.");
+        _pData.IsDead = true;
+        GameManager.Instance.PlayerDied();
+        _pData.Player_SpectatorMode.OnEnterSpectator();
     }
 }
