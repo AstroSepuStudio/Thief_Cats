@@ -36,15 +36,21 @@ public class MP_PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, _interactRange))
         {
+            Debug.Log("Hit");
             if (hit.collider.CompareTag("Interactable"))
             {
+                Debug.Log("Is interatable");
                 if (hit.collider.TryGetComponent<PhotonView>(out var targetPV))
                 {
+                    Debug.Log("Found photon view");
                     if (!targetPV.IsMine)
                         targetPV.RequestOwnership();
 
                     _currentTarget = hit.collider.GetComponent<NetworkInteractable>();
-                    _currentTarget?.StartPull(_pData.Player_Camera.transform, _interactRange, _pullStrength);
+                    if (_currentTarget == null) return;
+
+                    Debug.Log("Found Network Interactable component");
+                    _currentTarget.StartPull(_pData.Player_Camera.transform, _interactRange, _pullStrength);
                     _pullPoint.position = _pData.Player_Camera.transform.position + _pData.Player_Camera.transform.forward * _interactRange;
                 }
             }

@@ -22,7 +22,7 @@ public class NetworkInteractable : MonoBehaviourPun
     {
         if (!photonView.IsMine)
             return;
-
+        Debug.Log("Starting pull");
         _rb.useGravity = false;
         _targetOrigin = origin;
         _pullRange = range;
@@ -35,6 +35,7 @@ public class NetworkInteractable : MonoBehaviourPun
         if (!photonView.IsMine)
             return;
 
+        Debug.Log("Stopping pull");
         _rb.useGravity = true;
         _isBeingPulled = false;
     }
@@ -44,6 +45,7 @@ public class NetworkInteractable : MonoBehaviourPun
         if (!_isBeingPulled || !photonView.IsMine)
             return;
 
+        Debug.Log("Pulling");
         Vector3 targetPoint = _targetOrigin.position + _targetOrigin.forward * _pullRange;
         Vector3 direction = targetPoint - transform.position;
         float distance = direction.magnitude;
