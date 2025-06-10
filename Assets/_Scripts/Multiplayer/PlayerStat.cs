@@ -25,7 +25,12 @@ public class PlayerStat : MonoBehaviour
     void Die()
     {
         _pData.IsDead = true;
-        GameManager.Instance.PlayerDied();
         _pData.Player_SpectatorMode.OnEnterSpectator();
+        _pData.PullVFX.SetActive(false);
+
+        if (!_pData.Photon_View.IsMine)
+            _pData.Flashlight.SetActive(false);
+
+        GameManager.Instance.PlayerDied();
     }
 }

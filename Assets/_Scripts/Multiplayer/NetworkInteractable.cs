@@ -11,6 +11,7 @@ public class NetworkInteractable : MonoBehaviourPun
     Transform _targetOrigin;
     float _pullRange;
     float _strength;
+    MP_PlayerData _owner;
 
     void Awake()
     {
@@ -18,7 +19,7 @@ public class NetworkInteractable : MonoBehaviourPun
             _rb = GetComponent<Rigidbody>();
     }
 
-    public void StartPull(Transform origin, float range, float strength)
+    public void StartPull(MP_PlayerData owner, Transform origin, float range, float strength)
     {
         if (!photonView.IsMine)
             return;
@@ -28,6 +29,7 @@ public class NetworkInteractable : MonoBehaviourPun
         _pullRange = range;
         _strength = strength;
         _isBeingPulled = true;
+        _owner = owner;
     }
 
     public void StopPull()
@@ -49,7 +51,7 @@ public class NetworkInteractable : MonoBehaviourPun
         Vector3 targetPoint = _targetOrigin.position + _targetOrigin.forward * _pullRange;
         Vector3 direction = targetPoint - transform.position;
         float distance = direction.magnitude;
-
+        
         if (distance > _maxPullDistance)
         {
             StopPull();
@@ -62,5 +64,8 @@ public class NetworkInteractable : MonoBehaviourPun
 
         float finalForce = _strength * curveMultiplier;
         _rb.AddForce(direction.normalized * finalForce, ForceMode.Force);
+
+        if (_owner != null)
+            _owner.Photon_View.RPC("RPC_SetPullPoint", RpcTarget.AllBuffered, transform.position);
     }
 }

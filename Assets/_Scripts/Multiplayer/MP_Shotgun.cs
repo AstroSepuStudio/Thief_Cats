@@ -3,14 +3,12 @@ using Photon.Pun.Demo.PunBasics;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.UI.Image;
 
 public class MP_Shotgun : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] MP_PlayerData _pData;
     [SerializeField] ParticleSystem _shotEffect;
-    [SerializeField] LineRenderer _lineRenderer;
 
     [Header("Values")]
     [SerializeField] float _damage = 25f;
@@ -63,10 +61,6 @@ public class MP_Shotgun : MonoBehaviour
                 {
                     Debug.Log($"PlayerStat component not found, hit {rayHit.transform.gameObject.name}");
                 }
-
-                _lineRenderer.positionCount = 2;
-                _lineRenderer.SetPosition(0, origin);
-                _lineRenderer.SetPosition(1, ((playerHit.transform.position - origin).normalized * _range) + origin);
             }
         }
     }
@@ -76,21 +70,5 @@ public class MP_Shotgun : MonoBehaviour
     {
         if (_shotEffect != null)
             _shotEffect.Play();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (_pData == null || _pData.Player_Camera == null) return;
-
-        Vector3 origin = _pData.Player_Camera.transform.position;
-        Vector3 direction = _pData.Player_Camera.transform.forward;
-        Vector3 boxCenter = origin + direction * (_range / 2f);
-        Vector3 boxHalfExtents = new Vector3(_spreadWidth / 2f, _spreadHeight / 2f, _range / 2f);
-        Quaternion orientation = Quaternion.LookRotation(direction);
-
-        Gizmos.color = Color.red;
-        Matrix4x4 rotationMatrix = Matrix4x4.TRS(boxCenter, orientation, Vector3.one);
-        Gizmos.matrix = rotationMatrix;
-        Gizmos.DrawWireCube(Vector3.zero, boxHalfExtents * 2f);
     }
 }

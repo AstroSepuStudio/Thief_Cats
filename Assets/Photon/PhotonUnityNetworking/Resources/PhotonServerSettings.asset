@@ -46,6 +46,12 @@ MonoBehaviour:
   - RPC_IncreaseBalance
   - RPC_EndGame
   - SetTeam
+  - RPC_DisablePullVFX
+  - RPC_EnablePullVFX
+  - RPC_SetPullPoint
+  - RPC_NotifyDeath
+  - RPC_RequestSpawn
+  - NewThief
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

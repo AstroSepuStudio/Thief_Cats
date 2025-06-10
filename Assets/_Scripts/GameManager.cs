@@ -38,23 +38,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     public float GameDuration => _gameDuration;
     [HideInInspector] public UnityEvent<string> OnGameEnd;
 
-    List<MP_PlayerData> _connectedPlayers = new();
-    HashSet<MP_PlayerData> _thievesInTruck = new();
+    int _connectedPlayers;
     int _totalThieves = 0;
+    int _thievesInTruck = 0;
+    int _deadThieves = 0;
+    int _aliveThieves => _totalThieves - _deadThieves;
 
+    [PunRPC]
     public void NewThief() => _totalThieves++;
-
-    int GetAliveThievesCount()
-    {
-        int aliveThieves = 0;
-        foreach (var player in _connectedPlayers)
-        {
-            if (player.PlayerTeam != MP_PlayerData.Team.Thief) continue;
-            if (player.IsDead) continue;
-            aliveThieves++;
-        }
-        return aliveThieves;
-    }
 
     private void Awake()
     {
@@ -62,7 +53,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             Destroy(Instance);
         Instance = this;
         OnGameEnd = new();
-        _totalBalanceTxt.SetText($"$0/0");
+        _totalBalanceTxt.SetText($"$0/{_quota}");
     }
 
     private void Start()
@@ -95,7 +86,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             pData.Photon_View.RPC("SetTeam", RpcTarget.AllBuffered, MP_PlayerData.Team.Thief);
         }
 
-        _connectedPlayers.Add(pData);
         pData.SetUp();
     }
 
@@ -159,12 +149,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        foreach (var player in _connectedPlayers)
-        {
-            player.Player_Movement.enabled = false;
-            player.Player_SpectatorMode.enabled = false;
-        }
-
         Camera_Movement.enabled = false;
         //ShowEndGameScreen(result);
     }
@@ -179,12 +163,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        foreach (var player in _connectedPlayers)
-        {
-            player.Player_Movement.enabled = false;
-            player.Player_SpectatorMode.enabled = false;
-        }
 
         Camera_Movement.enabled = false;
     }
@@ -209,9 +187,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (player.PlayerTeam != MP_PlayerData.Team.Thief) return;
 
-        _thievesInTruck.Add(player);
+        _thievesInTruck++;
 
-        if (_thievesInTruck.Count < GetAliveThievesCount()) return;
+        if (_thievesInTruck < _aliveThieves) return;
         Debug.Log("All thieves are in the truck.");
 
         if (_totalBalance < _quota) return;
@@ -222,32 +200,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void PlayerExitsTruck(MP_PlayerData player)
     {
         if (player.PlayerTeam != MP_PlayerData.Team.Thief) return;
-
-        if (_thievesInTruck.Contains(player))
-        {
-            _thievesInTruck.Remove(player);
-            Debug.Log($"{player.name} exited the truck. Thieves in truck: {_thievesInTruck.Count}");
-        }
+        _thievesInTruck--;
+        Debug.Log("Thief exit the truck");
     }
 
     public void LeaveGameFromButton()
     {
-        MP_PlayerData localPlayer = _connectedPlayers.FirstOrDefault(p => p.Photon_View.IsMine);
-        if (localPlayer != null)
-        {
-            LeaveGame(localPlayer);
-        }
-    }
-
-    public void LeaveGame(MP_PlayerData player)
-    {
-        if (_connectedPlayers.Contains(player))
-        {
-            _connectedPlayers.Remove(player);
-            PhotonNetwork.Destroy(player.gameObject);
-            Debug.Log($"{player.name} removed from connected players.");
-        }
-
         PhotonNetwork.LeaveRoom();
     }
 
@@ -258,23 +216,37 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void PlayerDied()
     {
-        float deadPlayers = 0;
-        foreach (var player in _connectedPlayers)
-        {
-            if (player.IsDead)
-                deadPlayers++;
-        }
+        _deadThieves++;
 
-        if (deadPlayers == _totalThieves)
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        Debug.Log($"Thieves: {_totalThieves}, dead thieves; {_deadThieves}");
+
+        if (_deadThieves == _totalThieves)
         {
             EndGame(true);
+            return;
         }
 
-        if (_thievesInTruck.Count < GetAliveThievesCount()) return;
+        if (_thievesInTruck < _aliveThieves || _aliveThieves <= 0) return;
         Debug.Log("All thieves are in the truck.");
 
         if (_totalBalance < _quota) return;
         Debug.Log("Quota reached. Ending game.");
         EndGame();
+    }
+
+    public void EnablePullVFX(MP_PlayerData pData)
+    {
+        if (pData == null || pData.Photon_View == null) return;
+
+        pData.Photon_View.RPC("RPC_EnablePullVFX", RpcTarget.AllBuffered);
+    }
+
+    public void DisablePullVFX(MP_PlayerData pData)
+    {
+        if (pData == null || pData.Photon_View == null) return;
+
+        pData.Photon_View.RPC("RPC_DisablePullVFX", RpcTarget.AllBuffered);
     }
 }
