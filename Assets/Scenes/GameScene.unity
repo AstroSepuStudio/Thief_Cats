@@ -7340,8 +7340,8 @@ RectTransform:
   m_Children:
   - {fileID: 1724805349}
   - {fileID: 2015114856}
-  - {fileID: 1948846211}
   - {fileID: 1996000805}
+  - {fileID: 1948846211}
   m_Father: {fileID: 447943042}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -15272,8 +15272,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pData: {fileID: 0}
-  _controllerSensitivity: 200
-  _mouseSensitivity: 50
+  _controllerSensitivity: 150
+  _mouseSensitivity: 35
 --- !u!114 &2014464739
 MonoBehaviour:
   m_ObjectHideFlags: 0

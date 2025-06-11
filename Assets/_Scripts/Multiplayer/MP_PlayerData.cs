@@ -17,6 +17,7 @@ public class MP_PlayerData : MonoBehaviour
     public MP_PlayerInteraction Player_Interaction;
     public GameObject PullVFX;
     public GameObject Flashlight;
+    [SerializeField] GameObject[] DeactivateForClientOnPlay;
     [HideInInspector] public Camera Player_Camera;
 
     public bool IsDead = false;
@@ -30,6 +31,13 @@ public class MP_PlayerData : MonoBehaviour
             Player_Input.enabled = false;
 
             GameManager.Instance.OnGameEnd.AddListener(OnGameEnd);
+        }
+        else
+        {
+            foreach (var obj in DeactivateForClientOnPlay)
+            {
+                obj.SetActive(false);
+            }
         }
     }
 

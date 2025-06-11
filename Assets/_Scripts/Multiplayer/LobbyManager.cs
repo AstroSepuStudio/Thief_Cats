@@ -42,7 +42,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         if (string.IsNullOrEmpty(roomName))
         {
-            roomName = "Room_" + Random.Range(1000, 9999);
+            roomName = "Room" + Random.Range(1000, 9999);
         }
 
         SetPlayerName();
