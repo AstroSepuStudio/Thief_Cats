@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class MP_PlayerInteraction : MonoBehaviour, IPunOwnershipCallbacks
 {
+    [SerializeField] LayerMask _ignorePlayer;
     [SerializeField] float _interactRange = 5f;
     [SerializeField] float _pullStrength = 10f;
     [SerializeField] MP_PlayerData _pData;
@@ -16,6 +17,16 @@ public class MP_PlayerInteraction : MonoBehaviour, IPunOwnershipCallbacks
 
     void Start()
     {
+        EnableInteractions();
+    }
+
+    private void OnDestroy()
+    {
+        DisableInteractions();
+    }
+
+    public void EnableInteractions()
+    {
         if (!_pData.Photon_View.IsMine)
         {
             enabled = false;
@@ -26,9 +37,10 @@ public class MP_PlayerInteraction : MonoBehaviour, IPunOwnershipCallbacks
 
         _pData.Player_Input.actions["Interact"].started += BeginInteract;
         _pData.Player_Input.actions["Interact"].canceled += EndInteract;
+        _pData.Player_Input.actions["Scroll"].started += Scrolled;
     }
 
-    private void OnDestroy()
+    public void DisableInteractions()
     {
         if (!_pData.Photon_View.IsMine) return;
 
@@ -36,13 +48,20 @@ public class MP_PlayerInteraction : MonoBehaviour, IPunOwnershipCallbacks
 
         _pData.Player_Input.actions["Interact"].started -= BeginInteract;
         _pData.Player_Input.actions["Interact"].canceled -= EndInteract;
+        _pData.Player_Input.actions["Scroll"].started -= Scrolled;
+    }
+
+    private void Scrolled(InputAction.CallbackContext context)
+    {
+        if (_currentTarget == null) return;
+        _currentTarget.ChangePullRange(context.ReadValue<float>());
     }
 
     void BeginInteract(InputAction.CallbackContext ctx)
     {
         Ray ray = new(_pData.Player_Camera.transform.position, _pData.Player_Camera.transform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, _interactRange))
+        if (Physics.Raycast(ray, out RaycastHit hit, _interactRange, _ignorePlayer))
         {
             Debug.Log("Hit");
             if (hit.collider.CompareTag("Interactable"))
@@ -85,6 +104,16 @@ public class MP_PlayerInteraction : MonoBehaviour, IPunOwnershipCallbacks
     }
 
     void EndInteract(InputAction.CallbackContext ctx)
+    {
+        if (_currentTarget != null)
+        {
+            _currentTarget.StopPull();
+            _currentTarget = null;
+            GameManager.Instance.DisablePullVFX(_pData);
+        }
+    }
+
+    public void EndInteract()
     {
         if (_currentTarget != null)
         {

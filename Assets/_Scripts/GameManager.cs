@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -38,11 +39,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     public float GameDuration => _gameDuration;
     [HideInInspector] public UnityEvent<string> OnGameEnd;
 
-    int _connectedPlayers;
+    [SerializeField] List<MP_PlayerData> _players;
     int _totalThieves = 0;
     int _thievesInTruck = 0;
     int _deadThieves = 0;
     int _aliveThieves => _totalThieves - _deadThieves;
+
+    bool _gameEnded;
 
     [PunRPC]
     public void NewThief() => _totalThieves++;
@@ -61,7 +64,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         SpawnPlayer();
         if (PhotonNetwork.IsMasterClient)
             SpawnRandomItems();
+
+        M_Camera.fieldOfView = SettingsManager.CameraFOV;
+        SettingsManager.OnCameraFOVChanged.AddListener(OnCameraFOV);
     }
+
+    void OnCameraFOV(float value) => M_Camera.fieldOfView = value;
 
     public void SpawnPlayer()
     {
@@ -119,6 +127,16 @@ public class GameManager : MonoBehaviourPunCallbacks
         return M_Camera;
     }
 
+    public void AddPlayer(MP_PlayerData pData)
+    {
+        _players.Add(pData);
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            pData.Photon_View.RPC("RPC_SetPlayerID", RpcTarget.AllBuffered, _players.Count - 1);
+        }
+    }
+
     [PunRPC]
     public void RPC_IncreaseBalance(float value)
     {
@@ -136,12 +154,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_EndGame()
     {
-        string result;
-
-        if (_totalBalance >= _quota)
-            result = "Thieves Win!";
-        else
-            result = "Defender Wins!";
+        string result = _totalBalance >= _quota ? "Thieves Wins!" : "Defender Win!";
 
         Debug.Log($"Game Over: {result}");
         OnGameEnd?.Invoke(result);
@@ -150,7 +163,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         Cursor.visible = true;
 
         Camera_Movement.enabled = false;
-        //ShowEndGameScreen(result);
+        _gameEnded = true;
     }
 
     [PunRPC]
@@ -165,10 +178,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         Cursor.visible = true;
 
         Camera_Movement.enabled = false;
+        _gameEnded = true;
     }
 
     public void EndGame()
     {
+        if (_gameEnded) return;
+
         if (PhotonNetwork.IsMasterClient)
         {
             Photon_View.RPC("RPC_EndGame", RpcTarget.AllBuffered);
@@ -177,6 +193,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void EndGame(bool defensorWon)
     {
+        if (_gameEnded) return;
+
         if (PhotonNetwork.IsMasterClient)
         {
             Photon_View.RPC("RPC_EndGame", RpcTarget.AllBuffered, defensorWon);
@@ -206,12 +224,27 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void LeaveGameFromButton()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            EndGame(false);
+        }
+
         PhotonNetwork.LeaveRoom();
     }
 
     public override void OnLeftRoom()
     {
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        _totalThieves--;
+
+        if (_totalThieves <= 0)
+        {
+            EndGame(true);
+        }
     }
 
     public void PlayerDied()
@@ -248,5 +281,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (pData == null || pData.Photon_View == null) return;
 
         pData.Photon_View.RPC("RPC_DisablePullVFX", RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    public void RPC_SetCCSize(int id, float height, float center)
+    {
+        foreach (var p in _players)
+        {
+            if (p.PlayerID.Equals(id))
+            {
+                p.SetCCSize(height, center);
+                break;
+            }
+        }
     }
 }

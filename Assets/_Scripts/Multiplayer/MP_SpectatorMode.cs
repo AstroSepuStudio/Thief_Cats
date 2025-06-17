@@ -24,6 +24,10 @@ public class MP_SpectatorMode : MonoBehaviour
     {
         _pData.PlayerModel.SetActive(false);
         gameObject.layer = _waterLayer;
+        _pData.PullVFX.SetActive(false);
+
+        _pData.Glass.SetActive(false);
+
         if (!_photonView.IsMine)
         {
             return;
@@ -31,7 +35,7 @@ public class MP_SpectatorMode : MonoBehaviour
 
         this.enabled = true;
         _pData.Player_Movement.enabled = false;
-        _pData.Player_Interaction.enabled = false;
+        _pData.Player_Interaction.DisableInteractions();
 
         _currentSpeed = _walkSpeed;
 

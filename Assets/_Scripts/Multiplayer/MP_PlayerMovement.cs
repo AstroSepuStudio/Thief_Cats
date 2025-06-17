@@ -13,7 +13,6 @@ public class MP_PlayerMovement : MonoBehaviour
     [SerializeField] Transform _feet;
     [SerializeField] LayerMask _ignorePlayer;
 
-    [SerializeField] Transform _cameraTarget;
     [SerializeField] Transform _head;
     [SerializeField] Transform _crouchHeadPos;
 
@@ -26,6 +25,7 @@ public class MP_PlayerMovement : MonoBehaviour
     [SerializeField] float _walkSpeed;
     [SerializeField] float _sprintSpeed;
     [SerializeField] float _crouchSpeed;
+    [SerializeField] float _reloadingSpeed = 1f;
 
     [SerializeField] float _groundRadiusDet;
 
@@ -47,6 +47,8 @@ public class MP_PlayerMovement : MonoBehaviour
     [SerializeField] bool _isGrounded;
     [SerializeField] bool _tryCrouch;
     [SerializeField] bool _trySprint;
+
+    public bool _reloading;
 
     void Start()
     {
@@ -95,8 +97,7 @@ public class MP_PlayerMovement : MonoBehaviour
             StopCoroutine(_cameraTransitionRoutine);
         _cameraTransitionRoutine = StartCoroutine(SmoothCameraTargetMove(_crouchHeadPos.position));
 
-        _pData.Character_Controller.height = _crouchHeight;
-        _pData.Character_Controller.center = _crouchCenter;
+        GameManager.Instance.Photon_View.RPC("RPC_SetCCSize", RpcTarget.AllBuffered, _pData.PlayerID, _crouchHeight, _crouchCenter.y);
 
         _currentState = MovementState.Crouch;
         _currentSpeed = _crouchSpeed;
@@ -113,8 +114,7 @@ public class MP_PlayerMovement : MonoBehaviour
             StopCoroutine(_cameraTransitionRoutine);
         _cameraTransitionRoutine = StartCoroutine(SmoothCameraTargetMove(_head.position));
 
-        _pData.Character_Controller.height = _defaultHeight;
-        _pData.Character_Controller.center = _defaultCenter;
+        GameManager.Instance.Photon_View.RPC("RPC_SetCCSize", RpcTarget.AllBuffered, _pData.PlayerID, _defaultHeight, _defaultCenter.y);
 
         if (_currentState != MovementState.Crouch)
         {
@@ -176,7 +176,10 @@ public class MP_PlayerMovement : MonoBehaviour
         HandleStates();
 
         _movVector = _inputDir.x * transform.right + _inputDir.y * transform.forward;
-        _movVector *= _currentSpeed;
+        if (_reloading)
+            _movVector *= _reloadingSpeed;
+        else
+            _movVector *= _currentSpeed;
 
         Vector3 velocity = _movVector + Vector3.up * _yVelocity;
         _pData.Character_Controller.Move(velocity * Time.deltaTime);
@@ -250,17 +253,17 @@ public class MP_PlayerMovement : MonoBehaviour
 
     private IEnumerator SmoothCameraTargetMove(Vector3 targetPos)
     {
-        Vector3 startPos = _cameraTarget.position;
+        Vector3 startPos = _pData._cameraTarget.position;
         float elapsed = 0f;
 
         while (elapsed < _cameraTransitionDuration)
         {
-            _cameraTarget.position = Vector3.Lerp(startPos, targetPos, elapsed / _cameraTransitionDuration);
+            _pData._cameraTarget.position = Vector3.Lerp(startPos, targetPos, elapsed / _cameraTransitionDuration);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        _cameraTarget.position = targetPos;
+        _pData._cameraTarget.position = targetPos;
     }
 
     //private void OnDrawGizmos()

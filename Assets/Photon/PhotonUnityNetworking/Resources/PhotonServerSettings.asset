@@ -52,6 +52,10 @@ MonoBehaviour:
   - RPC_NotifyDeath
   - RPC_RequestSpawn
   - NewThief
+  - RPC_SwitchFlashlight
+  - RPC_SetPlayerID
+  - RPC_SetCCSize
+  - RPC_SetCameraTargetRotation
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -39,7 +39,6 @@ public class PlayerStat : MonoBehaviour
     {
         _pData.IsDead = true;
         _pData.Player_SpectatorMode.OnEnterSpectator();
-        _pData.PullVFX.SetActive(false);
 
         if (!_pData.Photon_View.IsMine)
         {

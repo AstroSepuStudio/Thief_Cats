@@ -23,7 +23,7 @@ public class NetworkInteractable : MonoBehaviourPun
     {
         if (!photonView.IsMine)
             return;
-        Debug.Log("Starting pull");
+
         _rb.useGravity = false;
         _targetOrigin = origin;
         _pullRange = range;
@@ -42,12 +42,31 @@ public class NetworkInteractable : MonoBehaviourPun
         _isBeingPulled = false;
     }
 
+    public void ChangePullRange(float delta)
+    {
+        float pullRange = _pullRange + delta * 0.4f;
+
+        if (pullRange > _maxPullDistance * 0.9f)
+            pullRange = _maxPullDistance * 0.9f;
+
+        if (pullRange <= 0)
+            pullRange = 0;
+
+        _pullRange = pullRange;
+    }
+
     void FixedUpdate()
     {
-        if (!_isBeingPulled || !photonView.IsMine)
+        if (!_isBeingPulled)
             return;
 
-        Debug.Log("Pulling");
+        if (!photonView.IsMine)
+        {
+            _owner.Player_Interaction.EndInteract();
+            _isBeingPulled = false;
+            return;
+        }
+
         Vector3 targetPoint = _targetOrigin.position + _targetOrigin.forward * _pullRange;
         Vector3 direction = targetPoint - transform.position;
         float distance = direction.magnitude;
@@ -55,6 +74,7 @@ public class NetworkInteractable : MonoBehaviourPun
         if (distance > _maxPullDistance)
         {
             StopPull();
+            _owner.Player_Interaction.EndInteract();
             return;
         }
 

@@ -3,12 +3,17 @@ using UnityEngine;
 using TMPro;
 using Photon.Realtime;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.Events;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
     [Header("References")]
     [SerializeField] MM_CanvasManager _canvasManager;
     [SerializeField] GameObject _roomWindow;
+    [SerializeField] GameObject _connectingToLobby;
+    [SerializeField] Image _firstLoadingCircle;
+    [SerializeField] Image _secondLoadingCircle;
 
     [Header("UI Elements")]
     [SerializeField] TMP_InputField _createRoomNameInput;
@@ -18,8 +23,14 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text _playerListText;
     [SerializeField] Button _startGameButton;
 
+    public UnityEvent OnGameStart = new();
+    bool _loading;
+
     private void Start()
     {
+        _loading = true;
+        _connectingToLobby.SetActive(true);
+        StartCoroutine(LoadingAnimation());
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -73,8 +84,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void StartRoomGame()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
         {
+            OnGameStart?.Invoke();
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
             PhotonNetwork.LoadLevel("GameScene");
@@ -90,19 +102,22 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         Debug.Log("Joined lobby");
+        _loading = false;
+        _connectingToLobby.SetActive(false);
     }
 
     public override void OnCreatedRoom()
     {
         Debug.Log("Room created");
-        _canvasManager.OpenWindow(_roomWindow);
+        //_canvasManager.OpenWindow(_roomWindow);
     }
 
     public override void OnJoinedRoom()
     {
         UpdateLobbyUI();
 
-        _startGameButton.interactable = PhotonNetwork.IsMasterClient;
+        _startGameButton.interactable = false;
+        _startGameButton.gameObject.SetActive(false);
         _canvasManager.OpenWindow(_roomWindow);
     }
 
@@ -137,7 +152,51 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             _playerListText.text += $"{player.NickName} ({role})\n";
         }
 
-        _startGameButton.gameObject.SetActive(PhotonNetwork.IsMasterClient);
-        _startGameButton.interactable = PhotonNetwork.CurrentRoom.PlayerCount > 1;
+        bool moraThanOne = PhotonNetwork.CurrentRoom.PlayerCount > 1;
+        if (PhotonNetwork.IsMasterClient)
+            _startGameButton.gameObject.SetActive(moraThanOne);
+        _startGameButton.interactable = moraThanOne;
+    }
+
+    IEnumerator LoadingAnimation()
+    {
+        float fillDuration = 0.5f;
+        _firstLoadingCircle.fillAmount = 0f;
+        _secondLoadingCircle.fillAmount = 0f;
+
+        while (_loading)
+        {
+            // Go from _firstLoadingCircle.fillAmount 0 to 1, then set it back to 0
+            // Set _secondLoadingCircle.fillAmount to 1 and the go from 1 to 0
+            // Repeat
+
+            float timer = 0f;
+            while (timer < fillDuration)
+            {
+                float t = timer / fillDuration;
+                _firstLoadingCircle.fillAmount = t;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            _firstLoadingCircle.fillAmount = 0f;
+            _secondLoadingCircle.fillAmount = 1f;
+
+            timer = fillDuration;
+            while (timer > 0)
+            {
+                float t = timer / fillDuration;
+                _secondLoadingCircle.fillAmount = t;
+
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+
+            _firstLoadingCircle.fillAmount = 0f;
+            _secondLoadingCircle.fillAmount = 0f;
+
+            yield return null;
+        }
     }
 }

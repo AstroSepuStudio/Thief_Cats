@@ -12,11 +12,6 @@ public class MP_CameraMovement : MonoBehaviour
     float _xRotation = 0f;
     float _yRotation = 0f;
 
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
     private void Update()
     {
         if (_pData == null) return;
@@ -25,13 +20,13 @@ public class MP_CameraMovement : MonoBehaviour
         if (Mathf.Approximately(lookInput.magnitude, 0))
         {
             lookInput = _pData.Player_Input.actions["MouseLook"].ReadValue<Vector2>();
-            _yRotation += lookInput.x * _mouseSensitivity * Time.deltaTime;
-            _xRotation -= lookInput.y * _mouseSensitivity * Time.deltaTime;
+            _yRotation += lookInput.x * _mouseSensitivity * Time.deltaTime * GetCameraMultiplier();
+            _xRotation -= lookInput.y * _mouseSensitivity * Time.deltaTime * GetCameraMultiplier();
         }
         else
         {
-            _yRotation += lookInput.x * _controllerSensitivity * Time.deltaTime;
-            _xRotation -= lookInput.y * _controllerSensitivity * Time.deltaTime;
+            _yRotation += lookInput.x * _controllerSensitivity * Time.deltaTime * GetCameraMultiplier();
+            _xRotation -= lookInput.y * _controllerSensitivity * Time.deltaTime * GetCameraMultiplier();
         }
 
         _xRotation = Mathf.Clamp(_xRotation, -80f, 80f);
@@ -43,6 +38,11 @@ public class MP_CameraMovement : MonoBehaviour
 
         transform.SetPositionAndRotation(_pData._cameraTarget.position, Quaternion.Euler(_xRotation, _yRotation, 0f));
         _pData.transform.rotation = Quaternion.Euler(0f, _yRotation, 0f);
-        _pData._cameraTarget.rotation = transform.rotation;
+        _pData.Photon_View.RPC("RPC_SetCameraTargetRotation", Photon.Pun.RpcTarget.AllBuffered, transform.rotation);
+    }
+
+    float GetCameraMultiplier()
+    {
+        return SettingsManager.CameraSensitivityMultiplier / 10f;
     }
 }

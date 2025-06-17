@@ -9,7 +9,6 @@ public class MP_Shotgun : MonoBehaviour
     [Header("References")]
     [SerializeField] MP_PlayerData _pData;
     [SerializeField] ParticleSystem _shotEffect;
-    [SerializeField] GameObject _canvas;
     [SerializeField] Image _reloadImage;
 
     [Header("Values")]
@@ -28,9 +27,7 @@ public class MP_Shotgun : MonoBehaviour
 
     private void Start()
     {
-        _canvas.SetActive(false);
         if (!_pData.Photon_View.IsMine || _pData == null) return;
-        _canvas.SetActive(true);
         _pData.Player_Input.actions["Fire"].started += Shoot;
         _reloadImage.fillAmount = 1f;
     }
@@ -48,7 +45,7 @@ public class MP_Shotgun : MonoBehaviour
 
         _lastShotTime = Time.time;
         _currentShoot = null;
-
+        
         _pData.Photon_View.RPC("RPC_PlayShootEffect", RpcTarget.All);
 
         _reloadImage.fillAmount = 0f;
@@ -84,6 +81,8 @@ public class MP_Shotgun : MonoBehaviour
 
     IEnumerator ReloadUIRoutine()
     {
+        _pData.Player_Movement._reloading = true;
+
         float elapsed = 0f;
         while (elapsed < _cooldown)
         {
@@ -92,6 +91,8 @@ public class MP_Shotgun : MonoBehaviour
             yield return null;
         }
         _reloadImage.fillAmount = 1f;
+
+        _pData.Player_Movement._reloading = false;
     }
 
     [PunRPC]
