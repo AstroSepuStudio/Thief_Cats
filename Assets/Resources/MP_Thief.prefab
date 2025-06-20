@@ -169,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ignorePlayer:
     serializedVersion: 2
-    m_Bits: 39
+    m_Bits: 35
   _interactRange: 3
   _pullStrength: 5
   _pData: {fileID: 4843577974874165093}
