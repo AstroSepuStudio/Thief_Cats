@@ -42,6 +42,7 @@ public class MP_PlayerData : MonoBehaviour
             _playerCanvas.gameObject.SetActive(true);
             Player_Input.actions["Flashlight"].started += SwitchFlashlightState;
             Glass.SetActive(false);
+            PlayerModel.SetActive(false);
         }
     }
 

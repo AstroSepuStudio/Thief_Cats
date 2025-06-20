@@ -108,6 +108,8 @@ public class MP_PlayerMovement : MonoBehaviour
 
     private void StopCrouch()
     {
+        if (IsUnderSomething()) return;
+
         _tryCrouch = false;
 
         if (_cameraTransitionRoutine != null)
@@ -128,6 +130,8 @@ public class MP_PlayerMovement : MonoBehaviour
     {
         if (_currentState == MovementState.Crouch)
         {
+            if (IsUnderSomething()) return;
+
             StopCrouch(context);
         }
 
@@ -148,6 +152,8 @@ public class MP_PlayerMovement : MonoBehaviour
 
     private void TryJump(InputAction.CallbackContext context)
     {
+        if (IsUnderSomething()) return;
+
         if (_isGrounded)
             _yVelocity = _jumpForce;
     }
@@ -264,6 +270,14 @@ public class MP_PlayerMovement : MonoBehaviour
         }
 
         _pData._cameraTarget.position = targetPos;
+    }
+
+    bool IsUnderSomething()
+    {
+        if (Physics.Raycast(_head.transform.position, Vector3.up, 0.5f, _ignorePlayer))
+            return true;
+
+        return false;
     }
 
     //private void OnDrawGizmos()
