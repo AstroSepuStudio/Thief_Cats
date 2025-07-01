@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     [Header("Game")]
     [SerializeField] int _minItems;
+    [SerializeField] int _maxItems;
     [SerializeField] float _gameDuration;
     [SerializeField] float _quota;
     float _totalBalance;
@@ -103,7 +104,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         List<Transform> shuffledSpawnPoints = _itemSpawnpoints.OrderBy(x => Random.value).ToList();
 
-        int itemCount = Random.Range(_minItems, _itemSpawnpoints.Length + 1);
+        int itemCount = Random.Range(_minItems, _maxItems);
 
         for (int i = 0; i < itemCount; i++)
         {

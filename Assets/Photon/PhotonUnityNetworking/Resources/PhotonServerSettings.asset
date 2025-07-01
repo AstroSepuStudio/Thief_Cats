@@ -57,5 +57,5 @@ MonoBehaviour:
   - RPC_SetCCSize
   - RPC_SetCameraTargetRotation
   DisableAutoOpenWizard: 1
-  ShowSettings: 0
+  ShowSettings: 1
   DevRegionSetOnce: 1

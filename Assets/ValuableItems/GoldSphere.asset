@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e040c3301440a2438b0970f0f3f10eb, type: 3}
   m_Name: GoldSphere
   m_EditorClassIdentifier: 
-  ObjectMinValue: 100
-  ObjectMaxValue: 500
+  ObjectMinValue: 1200
+  ObjectMaxValue: 1400
