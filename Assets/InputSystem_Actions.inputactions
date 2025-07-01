@@ -714,17 +714,6 @@
                 },
                 {
                     "name": "",
-                    "id": "deb903b3-a5fa-4a2d-8d25-172e25e14dfe",
-                    "path": "<Pointer>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse;Touch",
-                    "action": "ControllerLook",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "d12d17ea-23fb-46cd-8610-9ba40c89e600",
                     "path": "<Joystick>/{Hatswitch}",
                     "interactions": "",
