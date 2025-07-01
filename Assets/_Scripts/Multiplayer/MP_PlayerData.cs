@@ -21,6 +21,7 @@ public class MP_PlayerData : MonoBehaviour
     public GameObject PullVFX;
     public GameObject Flashlight;
     public GameObject Glass;
+    public Animator PlayerAnimator;
 
     [SerializeField] MP_PlayerCanvas _playerCanvas;
     [HideInInspector] public Camera Player_Camera;

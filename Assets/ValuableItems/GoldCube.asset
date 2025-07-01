@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e040c3301440a2438b0970f0f3f10eb, type: 3}
   m_Name: GoldCube
   m_EditorClassIdentifier: 
-  ObjectMinValue: 1200
-  ObjectMaxValue: 1400
+  ObjectMinValue: 700
+  ObjectMaxValue: 1000

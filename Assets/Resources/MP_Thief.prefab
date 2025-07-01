@@ -616,6 +616,8 @@ GameObject:
   - component: {fileID: 8661671121097837206}
   - component: {fileID: 7766896264930505112}
   - component: {fileID: 7477245118965633177}
+  - component: {fileID: 1026265391932697389}
+  - component: {fileID: 7288340117718146746}
   m_Layer: 6
   m_Name: MP_Thief
   m_TagString: Thief
@@ -700,6 +702,7 @@ MonoBehaviour:
   PullVFX: {fileID: 2182603185372923371}
   Flashlight: {fileID: 6420174474522218215}
   Glass: {fileID: 5211232215088004609}
+  PlayerAnimator: {fileID: 0}
   _playerCanvas: {fileID: 9017486285761683982}
   Player_Camera: {fileID: 0}
   IsDead: 0
@@ -723,6 +726,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 3148452251680123048}
+  - {fileID: 7288340117718146746}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -867,6 +871,58 @@ MonoBehaviour:
   _inputDir: {x: 0, y: 0}
   _movVector: {x: 0, y: 0, z: 0}
   _yVelocity: 0
+--- !u!95 &1026265391932697389
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5997861109954039805}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e4d39316f86a79448a69ab18a91ca136, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7288340117718146746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5997861109954039805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 1
+    Name: walk
+  - Type: 4
+    SynchronizeType: 1
+    Name: sprint
+  - Type: 4
+    SynchronizeType: 1
+    Name: crouch
+  - Type: 4
+    SynchronizeType: 1
+    Name: crouchWalk
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &6420174474522218215
 GameObject:
   m_ObjectHideFlags: 0

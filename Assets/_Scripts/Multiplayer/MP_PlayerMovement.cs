@@ -189,6 +189,34 @@ public class MP_PlayerMovement : MonoBehaviour
 
         Vector3 velocity = _movVector + Vector3.up * _yVelocity;
         _pData.Character_Controller.Move(velocity * Time.deltaTime);
+
+        if (_movVector.magnitude > 0)
+        {
+            if (Mathf.Approximately(_currentSpeed, _sprintSpeed))
+            {
+                _pData.PlayerAnimator.SetBool("sprint", true);
+                _pData.PlayerAnimator.SetBool("crouchWalk", false);
+                _pData.PlayerAnimator.SetBool("walk", false);
+            }
+            else if (Mathf.Approximately(_currentSpeed, _crouchSpeed))
+            {
+                _pData.PlayerAnimator.SetBool("crouchWalk", true);
+                _pData.PlayerAnimator.SetBool("sprint", false);
+                _pData.PlayerAnimator.SetBool("walk", false);
+            }
+            else
+            {
+                _pData.PlayerAnimator.SetBool("walk", true);
+                _pData.PlayerAnimator.SetBool("sprint", false);
+                _pData.PlayerAnimator.SetBool("crouchWalk", false);
+            }
+        }
+        else
+        {
+            _pData.PlayerAnimator.SetBool("walk", false);
+            _pData.PlayerAnimator.SetBool("sprint", false);
+            _pData.PlayerAnimator.SetBool("crouchWalk", false);
+        }
     }
 
     void HandleGravity()
