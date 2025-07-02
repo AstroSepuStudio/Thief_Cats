@@ -20,7 +20,6 @@ public class MP_PlayerData : MonoBehaviour
     public MP_PlayerInteraction Player_Interaction;
     public GameObject PullVFX;
     public GameObject Flashlight;
-    public GameObject Glass;
     public Animator PlayerAnimator;
 
     [SerializeField] MP_PlayerCanvas _playerCanvas;
@@ -42,7 +41,6 @@ public class MP_PlayerData : MonoBehaviour
             GameManager.Instance.OnGameEnd.AddListener(OnGameEnd);
             _playerCanvas.gameObject.SetActive(true);
             Player_Input.actions["Flashlight"].started += SwitchFlashlightState;
-            Glass.SetActive(false);
             PlayerModel.SetActive(false);
         }
     }
@@ -116,7 +114,6 @@ public class MP_PlayerData : MonoBehaviour
         Character_Controller.center = new (0, center, 0);
 
         PlayerModel.transform.localScale = new(1, height / 2, 1);
-        Glass.transform.localPosition = new(Glass.transform.localPosition.x, center - 1, Glass.transform.localPosition.z);
     }
 
     [PunRPC]

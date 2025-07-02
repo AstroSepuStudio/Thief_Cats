@@ -26,8 +26,6 @@ public class MP_SpectatorMode : MonoBehaviour
         gameObject.layer = _waterLayer;
         _pData.PullVFX.SetActive(false);
 
-        _pData.Glass.SetActive(false);
-
         if (!_photonView.IsMine)
         {
             return;
